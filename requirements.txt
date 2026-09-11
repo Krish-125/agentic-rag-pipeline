@@ -1,0 +1,14 @@
+langchain
+langchain-groq
+langchain-postgres
+langchain-huggingface
+sentence-transformers
+psycopg2-binary
+pypdf
+pdfplumber
+python-docx
+python-dotenv
+tiktoken
+pandas
+unstructured
+openpyxl
