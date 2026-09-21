@@ -144,7 +144,7 @@ def load_json(filepath:str, rows_per_chunk:int=25) -> list[Document]:
 
         for i,item in enumerate(chunk_items):
             item_number = chunk_start + i + 1
-            chunk_text += f"\nItem {item_number}:"
+            chunk_text += f"\n\nItem {item_number}:"
 
             if isinstance(item, dict):
                 lines = flatten_json(item)
