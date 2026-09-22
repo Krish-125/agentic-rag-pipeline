@@ -1,0 +1,1 @@
+# defines the table and creates it if it doesn't exist
