@@ -29,17 +29,24 @@ def load_pdf(filepath:str) -> list[Document]:
                 if not table or len(table) < 2:
                     continue
                 headers = table[0]
-                table_text = f"Table {t_idx + 1} on page {page_number}:\n"
-                for row in table[1:]:
-                    row_description = ", ".join(
-                        f"{headers[i]} = {row[i]}" for i in range(len(headers)) if i < len(row) and row[i]
-                    )
-                    table_text += f"- {row_description}\n"
-                metadata = {
-                    "source_filename": filename,
-                    "page_number": page_number,
-                    "content_type": "table"
-                }
+                data_rows = table[1:]
+
+                rows_per_chunk = 20
+                for chunk_start in range(0, len(data_rows), rows_per_chunk):
+                    chunk_rows = data_rows[chunk_start:chunk_start+rows_per_chunk]
+                    table_text = f"Table {t_idx + 1} on page {page_number} (rows {chunk_start + 1}-{chunk_start + len(chunk_rows)}):\n"
+                    for row in chunk_rows:
+                        row_description = ", ".join(
+                            f"{headers[i]} = {row[i]}" for i in range(len(headers)) if i < len(row) and row[i]
+                        )
+                        table_text += f"- {row_description}\n"
+                    
+                    metadata = {
+                        "source_filename": filename,
+                        "page_number": page_number,
+                        "content_type": "table",
+                        "row_range": f"{chunk_start+1}-{chunk_start+len(chunk_rows)}"
+                    }
                 documents.append(Document(page_content=table_text, metadata=metadata))
     return documents
 
@@ -63,17 +70,24 @@ def load_docx(filepath:str) -> list[Document]:
             continue
 
         headers = rows[0]
-        table_text = f"Table {t_idx + 1}:\n"
-        for row in rows[1:]:
-            row_description = ", ".join(
-                f"{headers[i]} = {row[i]}" for i in range(len(headers)) if i < len(row) and row[i]
-            )
-            table_text += f"- {row_description}\n"
-        metadata = {
-            "source_filename": filename,
-            "content_type": "table"
-        }
-        documents.append(Document(page_content=table_text, metadata=metadata))
+        data_rows = rows[1:]
+
+        rows_per_chunk = 20
+        for chunk_start in range(0, len(data_rows), rows_per_chunk):
+            chunk_rows = data_rows[chunk_start:chunk_start + rows_per_chunk]
+            table_text = f"Table {t_idx + 1} (rows {chunk_start + 1}-{chunk_start + len(chunk_rows)}):\n"
+            for row in chunk_rows:
+                row_description = ", ".join(
+                    f"{headers[i]} = {row[i]}" for i in range(len(headers)) if i < len(row) and row[i]
+                )
+                table_text += f"- {row_description}\n"
+
+            metadata = {
+                "source_filename": filename,
+                "content_type": "table",
+                "row_range": f"{chunk_start+1}-{chunk_start+len(chunk_rows)}"
+            }
+            documents.append(Document(page_content=table_text, metadata=metadata))
 
     return documents
 

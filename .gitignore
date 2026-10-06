@@ -69,6 +69,7 @@ data/raw/*
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+test_ingestion.py
 
 # Logs
 *.log

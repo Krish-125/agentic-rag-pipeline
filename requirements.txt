@@ -13,3 +13,4 @@ pandas
 unstructured
 openpyxl
 langchain-text-splitters
+pgvector
